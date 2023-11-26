@@ -6,7 +6,7 @@
   <br>
 </h1>
 
-<h4 align="center">🤖 An free and fully open source alternative for QQMiner.</h4>
+<h4 align="center">🤖 An free and fully open source alternative for paid minecraft bots.</h4>
 
 <p align="center">
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=18.0.0&logo=node.js&color=2334D058" />
