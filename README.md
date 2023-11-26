@@ -34,7 +34,7 @@ Project Beehive is an open source Minecraft bot with a goal to provide players a
 ## instalation 
 
 ```
-docker run -p 8000:000 thelodestoneproject/beehive
+docker run -p 8000:8000 thelodestoneproject/beehive
 ```
 
 </file-attachment-contents>
