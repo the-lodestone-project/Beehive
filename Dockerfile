@@ -17,6 +17,11 @@ RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN python -m javascript --install mineflayer
+RUN python -m javascript --install prismarine-viewer
+RUN python -m javascript --install minecraft-data
+RUN python -m javascript --install mineflayer-pathfinder
+RUN python -m javascript --install mineflayer-collectblock
 EXPOSE 8000
 EXPOSE 5000
 EXPOSE 5001

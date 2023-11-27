@@ -2,6 +2,9 @@ import gradio as gr
 import lodestone
 from lodestone import plugins
 import time
+from lodestone import logger
+from javascript import require
+import requests
 
 global created
 created = False
@@ -9,6 +12,10 @@ global chat_history
 chat_history = []
 global plugin_list
 plugin_list = []
+
+global bot_list
+bot_list = []
+
 
 
 css = """
@@ -27,6 +34,8 @@ def get_bot_status():
 
 def change_tab():
     return gr.Tabs.update(selected=1)
+
+
 
 
 
@@ -96,7 +105,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     info =f"""Successfully logged in as {bot.username}"""
     
     
-    
+    bot_list.append({f"{email}": bot})
     gr.Info(f"Successfully logged in as {bot.username}\n{plugin_str}")
     return bot.username, info, "Stop Bot"
 
@@ -207,11 +216,11 @@ def get_all_data():
 
 def get_latest_chats():
     if 'bot' in globals():
-        if len(chat_history) > 30:
+        if len(chat_history) > 200:
             chat_history.clear()
             return "No chat messages yet!"
         string = ""
-        for i in chat_history[-9:]:
+        for i in chat_history[-40:]:
             string += i + "\n"
         return string
     else:
@@ -264,19 +273,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
             info = gr.Textbox(value="", label="Info")
             
             btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
-        # with gr.Tab("Parameters"):
-        #     def live_view():
-        #         try:
-        #             if bot.viewer_port:
-        #                 port = bot.viewer_port
-        #             else:
-        #                 port = 5001
-        #         except:
-        #             port = 5001
-        #         return f'<iframe src="http://localhost:{port}" style="width:50vw; height:50vh;">Your browser doesnt support iframes</iframe>'
-        #     gr.HTML(f'<iframe src="http://localhost:{port}" style="width:50vw; height:50vh;">Your browser doesnt support iframes</iframe>')
-        #     pass
-        with gr.Tab("Multiple Bot"):
+        with gr.Tab("Multiple Bots"):
             email = gr.Textbox(placeholder="Notch", label="Username Prefix",info="Username prefix. The bot will login with this prefix and a number after it")
             auth = gr.Dropdown(["offline"], value="offline", label="Authentication Method",info="Authentication method to login with")
             host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
@@ -297,23 +294,115 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
             
             btn.click(create_multiple, inputs=[email, auth, host, port, version, amount], outputs=[out_username, info, btn], show_progress="minimal")
         
+        # with gr.Tab("EasyMC"):
+        #     email = gr.Textbox(placeholder="********************", label="Token",info="Token to login with")
+        #     host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
+        #     port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
+        #     version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
+        #     with gr.Accordion("Optional Settings", open=False):
+        #         enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
+        #         skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
+        #         viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
+        #         plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+                
+            
+            
+        #     btn = gr.Button(value=get_bot_status,variant='primary')
+            
+            
+            
+            
+        #     out_username = gr.Textbox(value="", label="Logged in as")
+        #     info = gr.Textbox(value="", label="Info")
+            
+        #     btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
+        
+        # with gr.Tab("The Altening"):
+        #     email = gr.Textbox(placeholder="*******@alt.com", label="Token",info="Token to login with")
+        #     host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
+        #     port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
+        #     version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
+        #     with gr.Accordion("Optional Settings", open=False):
+        #         enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
+        #         skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
+        #         viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
+        #         plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+        #     btn = gr.Button(value=get_bot_status,variant='primary')
+            
+            
+            
+            
+        #     out_username = gr.Textbox(value="", label="Logged in as")
+        #     info = gr.Textbox(value="", label="Info")
+            
+        
+        #     btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
+    
+    
+    
+    
+    
+    
     with gr.Tab("Chat"):
-        chat = gr.TextArea(value=get_latest_chats,every=5,label="Chat History (Updated every 5 seconds)",lines=10)
-        msg = gr.Textbox(label="Message to send",placeholder="Hello world!")
+        chat = gr.Textbox(value=get_latest_chats,every=2,label="Chat History (Updated every 2 seconds)",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
+        with gr.Accordion("Advanced Options", open=False):
+            with gr.Column(scale=1):
+                whisper = gr.Checkbox(value=False, label="Whisper", info="Whisper the message to the player",interactive=True)
+                whisper_player = gr.Dropdown([],show_label=False, info="The player to whisper to (Updated every 20 seconds)",interactive=True)
+            # get_players = gr.Button("Get Players", variant='primary')
+            
+            
+            with gr.Column(scale=1):
+                prefix = gr.Textbox(value="", show_label=False, info="Prefix to add to the start of the message",interactive=True)
+                suffix = gr.Textbox(value="", show_label=False, info="Suffix to add to the end of the message",interactive=True)
+                
+                
+                
+                
+            def get_players_def():
+                if 'bot' in globals():
+                    global players
+                    players = []
+                    for player in bot.bot.players.valueOf():
+                        players.append(player)
+                    players.remove(bot.username)
+                    return gr.Dropdown(choices=players)
+                else:
+                    return gr.Dropdown([])
+            
+            def just_some_random_update():
+                return time.time()
+            
+            updates = gr.Textbox(value=just_some_random_update, every=20, show_label=False, visible=False)
+            
+            
+            updates.change(get_players_def, outputs=[whisper_player])
+            
+        with gr.Row():
+                with gr.Column(scale=2, ):
+                    msg = gr.Textbox(show_label=False, container=False, placeholder="Type an message...", autofocus=True)
+                with gr.Column(scale=1, ):
+                    send_message = gr.Button("Send Message", variant='primary')
         clear = gr.ClearButton([msg, chat],value="Clear Chat History")
 
-        def respond(message):
+        def respond(message, whisper, whisper_player, prefix, suffix):
             if 'bot' in globals():
-                bot.chat(message)
+                if message != "":
+                    if whisper and whisper_player != None or "":
+                        bot.whisper(whisper_player, f"{prefix}{message}{suffix}")
+                    if not whisper:
+                        bot.chat(f"{prefix}{message}{suffix}")
                 return ""
             else:
+                gr.Warning("You need to create a bot first!")
                 return ""
         
         def delete():
             chat_history.clear()
         
         clear.click(delete)
-        msg.submit(respond, inputs=[msg],outputs=[msg])
+        send_message.click(respond, inputs=[msg, whisper, whisper_player, prefix, suffix],outputs=[msg])
+        msg.submit(respond, inputs=[msg, whisper, whisper_player, prefix, suffix],outputs=[msg])
         
     with gr.Tab("Plugins"):
         with gr.Accordion("Schematic Builder", open=False):
@@ -408,17 +497,20 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
 
     with gr.Tab("Player Info"):
         # refresh_button = gr.Button("Refresh")
-        with gr.Row():
-            with gr.Column(scale=1):
-                health = gr.Textbox(value=get_player_health, label=f"Health", every=5)
-            with gr.Column(scale=1):
-                food = gr.Textbox(value=get_player_food, label=f"Food", every=5)
-            with gr.Column(scale=1):
-                experience = gr.Textbox(value=get_player_experience, label=f"Experience Level", every=5)
-            with gr.Column(scale=1):
-                difficulty = gr.Textbox(value=get_player_difficulty, label=f"Difficulty", every=5)
-            with gr.Column(scale=1):
-                all_data = gr.Textbox(value=get_all_data, label=f"All Data", every=5)
+        with gr.Accordion("Bot Info", open=False):
+            with gr.Row():
+                with gr.Column(scale=1):
+                    health = gr.Textbox(value=get_player_health, label=f"Health", every=5)
+                with gr.Column(scale=1):
+                    food = gr.Textbox(value=get_player_food, label=f"Food", every=5)
+                with gr.Column(scale=1):
+                    experience = gr.Textbox(value=get_player_experience, label=f"Experience Level", every=5)
+                with gr.Column(scale=1):
+                    difficulty = gr.Textbox(value=get_player_difficulty, label=f"Difficulty", every=5)
+                with gr.Column(scale=1):
+                    all_data = gr.Textbox(value=get_all_data, label=f"All Data", every=5)
+        with gr.Accordion("Online Player Info", open=False):
+            pass
         # refresh_button.click(get_player_info, outputs=[health, food, experience])
 
     with gr.Tab("System Resources"):
@@ -448,7 +540,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
             with gr.Column(scale=1):
                 difficulty = gr.Textbox(value=platform.system, label=f"System Type")
         # refresh_button.click(get_player_info, outputs=[health, food, experience])
-        
+    
 # import os
 # from dotenv import load_dotenv
 # import socket
@@ -470,7 +562,8 @@ password = "lodestone"
 
 
 try:
-    ui.queue().launch(ssl_verify=False, server_name="0.0.0.0",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
+    logger.info("Running!\nURL: http://localhost:8000\nUsername: lodestone\nPassword: lodestone\n")
+    ui.queue().launch(inbrowser=True,ssl_verify=False, server_name="0.0.0.0",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
 except OSError:
     raise OSError(f"Port 8000 is already in use!")
     
