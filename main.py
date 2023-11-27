@@ -81,6 +81,8 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
         enable_viewer = True
     elif enable_viewer == True:
         enable_viewer = False
+    
+        
     bot = lodestone.createBot(
         host=host,
         username=email,
@@ -93,6 +95,11 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
         ls_skip_checks=skip_checks,
         ls_plugin_list=plugin_list
     )
+    
+    version_check = int(str(bot.bot.version).replace(".",""))
+    
+    if version_check >= 119:
+        gr.Warning(f"Beehive viewer does not currently support {bot.bot.version} this will cause the viewer to not work")
     
     @bot.on('messagestr')
     def chat_history_add(this, message, messagePosition, jsonMsg, sender, *args):
