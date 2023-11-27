@@ -6,7 +6,7 @@
   <br>
 </h1>
 
-<h4 align="center">🤖 An free and fully open source alternative for QQMiner.</h4>
+<h4 align="center">🤖 An free and fully open source alternative for paid minecraft bots.</h4>
 
 <p align="center">
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=18.0.0&logo=node.js&color=2334D058" />
@@ -30,5 +30,13 @@
 
 Project Beehive is an open source Minecraft bot with a goal to provide players access to helpful gameplay features at no cost. Developed with a clean user interface, Project Beehive offers various plugins and options similar to paid alternatives out there. The project is completely free, open source, and welcoming to contributions from the Minecraft community. Check the wiki for information on plugins, setup guides, contributing, and more. We aim to provide Minecraft players with an easy-to-use bot to enhance their gameplay experience without needing to pay. Feel free to open issues for bugs, suggestions, or questions!
 
+![alt text](https://i.imgur.com/RRHOgzp.png)
+
+
+## instalation 
+
+```
+docker run -p 8000:8000 thelodestoneproject/beehive
+```
 
 </file-attachment-contents>
