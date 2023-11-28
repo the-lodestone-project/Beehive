@@ -30,7 +30,7 @@
 
 Project Beehive is an open source Minecraft bot with a goal to provide players access to helpful gameplay features at no cost. Developed with a clean user interface, Project Beehive offers various plugins and options similar to paid alternatives out there. The project is completely free, open source, and welcoming to contributions from the Minecraft community. Check the wiki for information on plugins, setup guides, contributing, and more. We aim to provide Minecraft players with an easy-to-use bot to enhance their gameplay experience without needing to pay. Feel free to open issues for bugs, suggestions, or questions!
 
-## Freature and Plugins
+## Freature and Plugins 🕹
 | Plugin | Description | ✅ / ❌ |
 |-|-|-|
 | BobTheBotter | Follows the owner and kills anybody that gets close to him. | ❌ |   
@@ -63,7 +63,6 @@ Project Beehive is an open source Minecraft bot with a goal to provide players a
 | Term.WindowCaptchaBreaker | Clicks the correct block in a GUI to bypass a captcha | ❌ |  
 | No fall | Allows the player to float in the air. | ✅ |
 | Killaura | Moves and attacks the closest players. | ❌ (SOON) |
-| Derp | Derp Bots | ❌ |
 | Tunneler | Digs tunnels and mines ores that it finds. | ❌ |
 | AntiCaptcha | Bypass &quot;Please type &apos;abcd&apos; in chat&quot; Captchas! | ❌ |
 | Term.AutoArmor | Automatically puts on the best armor the bot current has in its inventory. | ❌ (SOON) |
