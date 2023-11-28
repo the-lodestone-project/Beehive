@@ -39,7 +39,7 @@ Project Beehive is an open source Minecraft bot with a goal to provide players a
 | Raid Alerts | Sends alerts on explosions and mob spawns | No |
 | Area Miner | Mines designated areas | No |
 | Hypixel Auto Crafting | Automates Hypixel crafting tasks | No |
-| Chat Spy | Views another bot's chat | Yes |
+| Chat Spy | Views the bot's chat | Yes |
 | Sugar Cane Farmer | Harvests and stores sugar cane | Coming soon |
 | Ore Miner | Mines ores using X-ray | Coming soon | 
 | Cactus Farm Builder | Builds cactus farms | Yes |
