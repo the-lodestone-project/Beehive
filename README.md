@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/lodestone/"><img src="assets/9990F441-DB4B-4BE1-AAE6-2E8A3EBC5D12.png" alt="Lodestone" width="560"></a>
+  <a href="/"><img src="assets/9990F441-DB4B-4BE1-AAE6-2E8A3EBC5D12.png" alt="Beehive" width="560"></a>
   <br>
 </h1>
 
@@ -17,14 +17,9 @@
 
 <p align="center">
   <a href="#about">About</a> •
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#how-to-install">Install</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#license">License</a>
+  <a href="#freature-and-plugins-🕹">Features</a> •
+  <a href="#how-to-install-📥">Install</a>
 </p>
-
-<!-- ![screenshot](https://raw.githubusercontent.com/SilkePilon/youdotcom/main/assets/images/YouDotCom.jpg) -->
 
 ## About 📬
 
