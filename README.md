@@ -16,9 +16,9 @@
 </p>
 
 <p align="center">
-  <a href="#about">About</a> •
-  <a href="#freature-and-plugins">Features</a> •
-  <a href="#how-to-install">Install</a>
+  <a href="#about-">About</a> •
+  <a href="#freature-and-plugins-">Features</a> •
+  <a href="#how-to-install-">Install</a>
 </p>
 
 ## About 📬
