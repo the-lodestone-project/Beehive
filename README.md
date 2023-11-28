@@ -31,44 +31,44 @@
 Project Beehive is an open source Minecraft bot with a goal to provide players access to helpful gameplay features at no cost. Developed with a clean user interface, Project Beehive offers various plugins and options similar to paid alternatives out there. The project is completely free, open source, and welcoming to contributions from the Minecraft community. Check the wiki for information on plugins, setup guides, contributing, and more. We aim to provide Minecraft players with an easy-to-use bot to enhance their gameplay experience without needing to pay. Feel free to open issues for bugs, suggestions, or questions!
 
 ## Freature and Plugins 🕹
-| Plugin | Description | ✅ / ❌ |
+| Plugin | Description | Available |
 |-|-|-|
-| BobTheBotter | Follows the owner and kills anybody that gets close to him. | ❌ |   
-| Shield aura | Follows the owner. | ❌ |
-| Schematic Builder | WARNING before using this read the settings menu | ✅ |
-| Raid alerts | Notifies the user on discord when an explosion occurs/mobs appear... | ❌ |
-| Area miner | (BETA) Mines the selected zone. | ❌ |
-| HypixelAutocrafting | IMPORTANT!! Read the Description in the bot!! | ❌ |  
-| Chat spy | Allows you to see a bots chat | ✅ |
-| Sugarcane farmer | Mines the closest sugarcane. Once full it stores the items in the closest empty chest. | ❌ (SOON) |
-| Ore miner | Mines ores using xray. | ❌ (SOON) |
-| ZerGo0.CactusFarmBuilder | Builds a cactus farm for you. (Thanks to @BobTheBotter) | ✅ |
-| Auto AFK | Allows you to automatically AFK your farms | ❌ (SOON) |
-| Container Viewer | Allows you to inspect the opened inventories of an individual bot. | ❌ (SOON) |
-| Chat2Discord | Sends the players chat to a discord channel. | ✅ |
-| KnockBack | Makes your bots able to rechieve knockback, for bypassing anticheats, like = ^ | ✅ |
-| Chatbot | a basic chat bot which gets more commands every update | ✅ |
-| CaptchaBreaker | Auto solves chat, inventory/chest and book captchas. | ❌ |
-| SandPrinter | Places sand in the specified area. | ❌ |  
-| Discoli.Wander | Aimlessly moves bots around tricking people into thinking they&apos;re real players. | ✅ |
-| Sugarcane farm builder | Automatically builds sugarcane farms. | ❌ |
-| AutoFisher | Gets you level 99 in fishing. | ❌ |
-| Ban checker | Checks if an account is banned on a server and outputs the result. | ❌ |
-| Auto eater | Eats food when hungry, eats gapples when low on hp. | ✅ |
-| Crop farmer | Farms carrots, potatoes and wheat | ❌ (SOON) |
-| eZ.InventoryManager | Allows you to access a bot&apos;s inventory from a windows form | ❌ |  
-| ZerGo0.StationaryMobAura | Attacks all mobs around the bot | ❌ |
-| Netherwart farmer | Farms netherwarts. | ❌ |
-| ZerGo0.TreeFarmer | Farms Trees in a certain area or infinitely | ❌ |
-| Term.WindowCaptchaBreaker | Clicks the correct block in a GUI to bypass a captcha | ❌ |  
-| No fall | Allows the player to float in the air. | ✅ |
-| Killaura | Moves and attacks the closest players. | ❌ (SOON) |
-| Tunneler | Digs tunnels and mines ores that it finds. | ❌ |
-| AntiCaptcha | Bypass &quot;Please type &apos;abcd&apos; in chat&quot; Captchas! | ❌ |
-| Term.AutoArmor | Automatically puts on the best armor the bot current has in its inventory. | ❌ (SOON) |
-| JF.Chat2Discord | Send the chat to discord | ✅ |
-| Anti Cheat Compliance | Slows down the bots for aggressive anti cheat plugins. | ❌ |
-| eZ.ContainerNav | Allows you to navigate a container-based GUI on Minecraft servers e.g lobby selector | ❌ |
+| Bob The Botter | Follows and attacks nearby players | No |
+| Shield Aura | Follows and protects owner | No |  
+| Schematic Builder | Builds structures from schematics | Yes |
+| Raid Alerts | Sends alerts on explosions and mob spawns | No |
+| Area Miner | Mines designated areas | No |
+| Hypixel Auto Crafting | Automates Hypixel crafting tasks | No |
+| Chat Spy | Views another bot's chat | Yes |
+| Sugar Cane Farmer | Harvests and stores sugar cane | Coming soon |
+| Ore Miner | Mines ores using X-ray | Coming soon | 
+| Cactus Farm Builder | Builds cactus farms | Yes |
+| Auto AFK | Automates farming tasks | Coming soon |
+| Container Viewer | Checks bots' inventories | Coming soon |
+| Chat to Discord | Forwards chat to Discord | Yes |
+| Knockback | Simulates knockback physics | Yes |
+| Chatbot | Responds to chat commands | Yes |  
+| Captcha Breaker | Solves in-game captchas | No |
+| Sand Printer | Places sand blocks | No |
+| Wander | Moves bots randomly | Yes |
+| Farm Builder | Builds sugar cane farms | No |
+| Auto Fisher | Gets max fishing level | No |
+| Ban Checker | Checks if accounts are banned | No |
+| Auto Eater | Eats when hungry or damaged | Yes |
+| Crop Farmer | Farms crops | Coming soon |
+| Inventory Manager | Manages bot inventories | No | 
+| Mob Aura | Attacks nearby mobs | No |
+| Netherwart Farmer | Farms nether wart | No |
+| Tree Farmer | Farms trees | No |
+| GUI Captcha Breaker | Solves GUI captchas | No |
+| No Fall | Prevents fall damage | Yes |
+| Killaura | Attacks nearby players | Coming soon |
+| Tunneler | Digs tunnels and mines ore | No |
+| Anti-Captcha | Solves chat captchas | No | 
+| Auto Armor | Equips best armor automatically | Coming soon |
+| Chat to Discord | Forwards chat to Discord | Yes |
+| Anti-Cheat Compliance | Bypasses anti-cheat plugins | No |
+| Container Navigator | Navigates container GUIs | No |
 
 
 ## How To Install 📥
