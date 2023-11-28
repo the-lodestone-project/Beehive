@@ -60,7 +60,7 @@ If you dont have Docker installed, you can easily get Project Beehive up and run
 
 1. Open your terminal.
 
-2. Clone the latest version of this repo using the following command:
+2. Clone the latest version of this repository using the following command:
 
 ```bash
 git clone https://github.com/the-lodestone-project/Beehive.git
@@ -75,7 +75,7 @@ cd Beehive
 ```bash
 pip install -r requirements.txt
 ```
-After cloning the repo and installing all the dependencies, run the python script with the following command:
+After cloning the repository and installing all the dependencies, run the python script with the following command:
 
 ```bash
 python main.py
