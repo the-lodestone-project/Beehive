@@ -34,7 +34,7 @@ Project Beehive is an open source Minecraft bot with a goal to provide players a
 
 ## How To Install 📥
 
-### Docker 🐳(recommended)
+### Docker 🐳 (recommended)
 If you have Docker installed, you can easily get Project Beehive up and running. Follow the steps below:
 
 1. Open your terminal.
