@@ -33,7 +33,7 @@ Project Beehive is an open source Minecraft bot with a goal to provide players a
 ## Freature and Plugins 🕹
 | Plugin | Description | Available |
 |-|-|-|
-| Bob The Botter | Follows and attacks nearby players | No |
+| Defender | Follows and attacks nearby players | No |
 | Shield Aura | Follows and protects owner | No |  
 | Schematic Builder | Builds structures from schematics | Yes |
 | Raid Alerts | Sends alerts on explosions and mob spawns | No |
