@@ -33,50 +33,43 @@ Project Beehive is an open source Minecraft bot with a goal to provide players a
 ## Freature and Plugins
 | Plugin | Description | ✅ |
 |-|-|-|
-| BobTheBotter | Follows the owner and kills anybody that gets close to him. | ✅ |   
-| OQ.Shield aura | Follows the owner. | ✅ |
+| BobTheBotter | Follows the owner and kills anybody that gets close to him. | ❌ |   
+| Shield aura | Follows the owner. | ❌ |
 | Schematic Builder | WARNING before using this read the settings menu | ✅ |
-| OQ.Raid alerts | Notifies the user on discord when an explosion occurs/mobs appear... | ✅ |
-| OQ.Area miner | (BETA) Mines the selected zone. | ✅ |
-| HypixelAutocrafting | IMPORTANT!! Read the Description in the bot!! | ✅ |  
-| OQ.Chat spy | Allows you to see a bots chat | ✅ |
-| OQ.Sugarcane farmer | Mines the closest sugarcane. Once full it stores the items in the closest empty chest. | ✅ |
-| OQ.Ore miner | Mines ores using xray. | ✅ |
+| Raid alerts | Notifies the user on discord when an explosion occurs/mobs appear... | ❌ |
+| Area miner | (BETA) Mines the selected zone. | ❌ |
+| HypixelAutocrafting | IMPORTANT!! Read the Description in the bot!! | ❌ |  
+| Chat spy | Allows you to see a bots chat | ✅ |
+| Sugarcane farmer | Mines the closest sugarcane. Once full it stores the items in the closest empty chest. | ❌ (SOON) |
+| Ore miner | Mines ores using xray. | ❌ (SOON) |
 | ZerGo0.CactusFarmBuilder | Builds a cactus farm for you. (Thanks to @BobTheBotter) | ✅ |
-| Auto AFK | Allows you to automatically AFK your farms | ✅ |
-| OQ.Container Viewer | Allows you to inspect the opened inventories of an individual bot. | ✅ |
-| OQ.Chat2Discord | Sends the players chat to a discord channel. | ✅ |
+| Auto AFK | Allows you to automatically AFK your farms | ❌ (SOON) |
+| Container Viewer | Allows you to inspect the opened inventories of an individual bot. | ❌ (SOON) |
+| Chat2Discord | Sends the players chat to a discord channel. | ✅ |
 | KnockBack | Makes your bots able to rechieve knockback, for bypassing anticheats, like = ^ | ✅ |
 | Chatbot | a basic chat bot which gets more commands every update | ✅ |
-| OQ.CaptchaBreaker | Auto solves chat, inventory/chest and book captchas. | ✅ |
-| OQ.SandPrinter | Places sand in the specified area. | ✅ |  
+| CaptchaBreaker | Auto solves chat, inventory/chest and book captchas. | ❌ |
+| SandPrinter | Places sand in the specified area. | ❌ |  
 | Discoli.Wander | Aimlessly moves bots around tricking people into thinking they&apos;re real players. | ✅ |
-| OQ.Sugarcane farm builder | Automatically builds sugarcane farms. | ✅ |
-| OQ.AutoFisher | Gets you level 99 in fishing. | ✅ |
-| OQ.Ban checker | Checks if an account is banned on a server and outputs the result. | ✅ |
-| Better Pathing | A plugin that provides a better alternative to the current pathing system | ✅ |
-| OQ.Auto eater | Eats food when hungry, eats gapples when low on hp. | ✅ |
-| OQ.Crop farmer | Farms carrots, potatoes and wheat | ✅ |
-| eZ.InventoryManager | Allows you to access a bot&apos;s inventory from a windows form | ✅ |  
-| OQ.FTop Report | Posts FTop stats to the discord. | ✅ |
-| OQ.Tpa all | Teleport all bots to you. | ✅ |
-| ZerGo0.StationaryMobAura | Attacks all mobs around the bot | ✅ |
-| OQ.Text spammer | Spams lines from a text file. | ✅ |
-| OQ.Netherwart farmer | Farms netherwarts. | ✅ |
-| ZerGo0.TreeFarmer | Farms Trees in a certain area or infinitely | ✅ |
-| Term.WindowCaptchaBreaker | Clicks the correct block in a GUI to bypass a captcha | ✅ |  
-| OQ.No fall | Allows the player to float in the air. | ✅ |
-| OQ.Killaura | Moves and attacks the closest players. | ✅ |
-| Derp | Derp Bots | ✅ |
-| OQ.Tunneler | Digs tunnels and mines ores that it finds. | ✅ |
-| OQ.Server ping | Bypasses the &quot;Refresh your server list&quot; message. | ✅ |
-| AntiCaptcha | Bypass &quot;Please type &apos;abcd&apos; in chat&quot; Captchas! | ✅ |
-| Term.AutoArmor | Automatically puts on the best armor the bot current has in its inventory. | ✅ |
+| Sugarcane farm builder | Automatically builds sugarcane farms. | ❌ |
+| AutoFisher | Gets you level 99 in fishing. | ❌ |
+| Ban checker | Checks if an account is banned on a server and outputs the result. | ❌ |
+| Auto eater | Eats food when hungry, eats gapples when low on hp. | ✅ |
+| Crop farmer | Farms carrots, potatoes and wheat | ❌ (SOON) |
+| eZ.InventoryManager | Allows you to access a bot&apos;s inventory from a windows form | ❌ |  
+| ZerGo0.StationaryMobAura | Attacks all mobs around the bot | ❌ |
+| Netherwart farmer | Farms netherwarts. | ❌ |
+| ZerGo0.TreeFarmer | Farms Trees in a certain area or infinitely | ❌ |
+| Term.WindowCaptchaBreaker | Clicks the correct block in a GUI to bypass a captcha | ❌ |  
+| No fall | Allows the player to float in the air. | ✅ |
+| Killaura | Moves and attacks the closest players. | ❌ (SOON) |
+| Derp | Derp Bots | ❌ |
+| Tunneler | Digs tunnels and mines ores that it finds. | ❌ |
+| AntiCaptcha | Bypass &quot;Please type &apos;abcd&apos; in chat&quot; Captchas! | ❌ |
+| Term.AutoArmor | Automatically puts on the best armor the bot current has in its inventory. | ❌ (SOON) |
 | JF.Chat2Discord | Send the chat to discord | ✅ |
-| OQ.Anti Cheat Compliance | Slows down the bots for aggressive anti cheat plugins. | ✅ |
-| Invaded Captcha Fucker | Breaks the captcha on invadedlands.net | ✅ |
-| eZ.ContainerNav | Allows you to navigate a container-based GUI on Minecraft servers e.g lobby selector | ✅ |
-| 8aus song | Sings happy birthday to you when you get lonely. (voluime required) | ✅ |
+| Anti Cheat Compliance | Slows down the bots for aggressive anti cheat plugins. | ❌ |
+| eZ.ContainerNav | Allows you to navigate a container-based GUI on Minecraft servers e.g lobby selector | ❌ |
 
 
 ## How To Install 📥
