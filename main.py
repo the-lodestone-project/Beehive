@@ -534,7 +534,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                         string += """---\n"""
                     return string
                 
-                gr.Markdown(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5, autoscroll=True, autofocus=False)
+                gr.Markdown(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5)
                 
             new_script = gr.Textbox(placeholder="Enter your chat commands here.",every=2,label="Automated Script",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
             with gr.Accordion("Advanced Script Options", open=False):
@@ -552,6 +552,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
             
             def delete():
                 auto_scripts.clear()
+                gr.Info("Successfully removed all scripts!")
                 
             
             def add_script(new_script, every_time, script_name, script_start_on, script_delay):
