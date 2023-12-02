@@ -5,6 +5,7 @@ import time
 from lodestone import logger
 from javascript import require
 import requests
+import threading
 
 global created
 created = False
@@ -16,14 +17,8 @@ plugin_list = []
 global bot_list
 bot_list = []
 
-
-
-css = """
-.error {
-  color: red
-}
-"""
-
+global auto_scripts
+auto_scripts = []
 
 
 def get_bot_status():
@@ -60,6 +55,8 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
         gr.Warning("not all fields are filled in!")
         return "Unknown", "Unknown", "Login/Create Bot"
     
+    
+    gr.Warning("If its your first time logging in you may need to login using the terminal!")
     
     global bot
     plugin_str = ""
@@ -108,6 +105,30 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
             chat_history.append(f"{message}")
         else:
             chat_history.append(f"{sender}: {message}")
+    
+    
+    if auto_scripts:
+        for script in auto_scripts:
+            if script["event"] == "Start once spawn":
+                texts = [text for text in str(script["script"]).split("\n")]
+                for text in texts:
+                    if text != "":
+                        bot.chat(text)
+                        time.sleep(script["delay"])
+                gr.Info(f"Successfully ran script {script['name']}")
+            elif script["event"] == "Start on time (See Advanced Options)":
+                def run_time_script():
+                    while True:
+                        texts = [text for text in str(script["script"]).split("\n")]
+                        for text in texts:
+                            if text != "":
+                                bot.chat(text)
+                                time.sleep(script["delay"])
+                        time.sleep(script["every"])
+                threading.Thread(target=run_time_script).start()
+            else:
+                pass
+    
     
     info =f"""Successfully logged in as {bot.username}"""
     
@@ -250,6 +271,7 @@ def build_schematic(files, x, z):
     if 'bot' in globals():
         bot.goto(x, z)
         time.sleep(2)
+        gr.Info(f"Successfully building schematic at {x}, {z}")
         bot.build_schematic(f'{files.name}')
     else:
         gr.Warning("You need to login first!")
@@ -413,14 +435,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
         
     with gr.Tab("Plugins"):
         with gr.Accordion("Schematic Builder", open=False):
-            
-            def check():
-                if not plugins.schematic in plugin_list:
-                    return "The Schematic Builder plugin is not loaded"
-                else:
-                    return "pluginloaded"
-               
-            gr.Textbox(value=check, every=30, show_label=False)
             # with gr.Row():
             #     with gr.Column(scale=1, ):
             file_output = gr.File(file_types=[".schematic", ".nbt", ".schem"], label="Schematic File (.schematic .nbt .schem)",file_count="single")
@@ -481,6 +495,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 print(details)
                 if 'bot' in globals():
                     bot.discordrp(state=state, details=details, start=time.time())
+                    gr.Info("Successfully updated presence!")
                 else:
                     pass
             
@@ -499,6 +514,49 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                     jump = gr.Button("Stop walking forward")
         with gr.Tab("Follow Player/Entity"):
             gr.Markdown("")
+            
+    
+    with gr.Tab("Automation"):
+        with gr.Tab("Script Scheduler"):
+            with gr.Accordion("Active Scripts", open=False):
+                
+                def get_active_scripts():
+                    string = ""
+                    for script in auto_scripts:
+                        string += str(script) + "\n"
+                    return string
+                
+                gr.Textbox(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5, lines=6, max_lines=6, autoscroll=True, autofocus=False)
+                
+            new_script = gr.Textbox(placeholder="Enter your chat commands here.",every=2,label="Automated Script",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
+            with gr.Accordion("Advanced Script Options", open=False):
+                every_time = gr.Number(value=100, label="Every (seconds)",info="How often to run the script (in seconds)",interactive=True)
+                script_delay = gr.Slider(minimum=1, maximum=50, step=1, label="Delay (seconds)",info="Delay between chat commands (in seconds)",interactive=True)
+
+            with gr.Row():
+                    with gr.Column(scale=2, ):
+                        script_name = gr.Textbox(show_label=False, container=False, placeholder="Script Name", autofocus=True)
+                    with gr.Column(scale=1, ):
+                        script_start_on = gr.Dropdown(choices=["Start once spawn", "Start on time (See Advanced Options)"], value="Start once spawn", show_label=False, container=False, )
+                    with gr.Column(scale=1, ):
+                        add_script_to = gr.Button("Add Script", variant='primary')
+            clear = gr.ClearButton([script_name],value="Remove All Scripts")
+            
+            def delete():
+                chat_history.clear()
+                
+            
+            def add_script(new_script, every_time, script_name, script_start_on, script_delay):
+                if not new_script or not every_time or not script_name or not script_start_on:
+                    gr.Warning("not all fields are filled in!")
+                    return new_script, script_name
+                else:   
+                    auto_scripts.append({"script": new_script, "every": every_time, "name": script_name, "event": script_start_on, "delay": script_delay})
+                    gr.Info(f"Successfully added script {script_name} to the scheduler!")
+                    return "", ""
+            
+            clear.click(delete)
+            add_script_to.click(add_script, inputs=[new_script, every_time, script_name, script_start_on, script_delay], outputs=[new_script, script_name])
                 
             
 
