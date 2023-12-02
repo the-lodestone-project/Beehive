@@ -518,25 +518,26 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
     
     with gr.Tab("Automation"):
         with gr.Tab("Script Scheduler"):
-            with gr.Accordion("Active Scripts", open=False):
-                
-                def get_active_scripts():
-                    string = ""
-                    for script in auto_scripts:
-                        string += f"""### {script['name']}\nCommands:\n"""
-                        scripts = [text for text in str(script["script"]).split("\n")]
-                        for text in scripts:
-                            if text != "":
-                                string += f"""* {text}\n"""
-                        string += f"""\n"""
-                        string += f"""Every {script['every']} seconds\n\n"""
-                        string += f"""Delay: {script['delay']} seconds\n\n"""
-                        string += """---\n"""
-                    return string
-                
-                gr.Markdown(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5)
-                
-            new_script = gr.Textbox(placeholder="Enter your chat commands here.",every=2,label="Automated Script",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
+            with gr.Row():
+                with gr.Column(scale=2, ):
+                    new_script = gr.Textbox(placeholder="Enter your chat commands here.",every=2,label="Automated Script",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
+                with gr.Column(scale=1, ):
+                    with gr.Accordion("Active Scripts", open=True):
+                        def get_active_scripts():
+                            string = ""
+                            for script in auto_scripts:
+                                string += f"""### {script['name']}\nCommands:\n"""
+                                scripts = [text for text in str(script["script"]).split("\n")]
+                                for text in scripts:
+                                    if text != "":
+                                        string += f"""* {text}\n"""
+                                string += f"""\n"""
+                                string += f"""Every {script['every']} seconds\n\n"""
+                                string += f"""Delay: {script['delay']} seconds\n\n"""
+                                string += """---\n"""
+                            return string
+                        
+                        gr.Markdown(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5)
             with gr.Accordion("Advanced Script Options", open=False):
                 every_time = gr.Number(value=100, label="Every (seconds)",info="How often to run the script (in seconds)",interactive=True)
                 script_delay = gr.Slider(minimum=1, maximum=50, step=1, label="Delay (seconds)",info="Delay between chat commands (in seconds)",interactive=True)
