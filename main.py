@@ -523,10 +523,18 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 def get_active_scripts():
                     string = ""
                     for script in auto_scripts:
-                        string += str(script) + "\n"
+                        string += f"""### {script['name']}\nCommands:\n"""
+                        scripts = [text for text in str(script["script"]).split("\n")]
+                        for text in scripts:
+                            if text != "":
+                                string += f"""* {text}\n"""
+                        string += f"""\n"""
+                        string += f"""Every {script['every']} seconds\n\n"""
+                        string += f"""Delay: {script['delay']} seconds\n\n"""
+                        string += """---\n"""
                     return string
                 
-                gr.Textbox(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5, lines=6, max_lines=6, autoscroll=True, autofocus=False)
+                gr.Markdown(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5, autoscroll=True, autofocus=False)
                 
             new_script = gr.Textbox(placeholder="Enter your chat commands here.",every=2,label="Automated Script",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
             with gr.Accordion("Advanced Script Options", open=False):
@@ -543,7 +551,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
             clear = gr.ClearButton([script_name],value="Remove All Scripts")
             
             def delete():
-                chat_history.clear()
+                auto_scripts.clear()
                 
             
             def add_script(new_script, every_time, script_name, script_start_on, script_delay):
