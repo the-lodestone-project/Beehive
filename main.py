@@ -55,6 +55,8 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
         gr.Warning("not all fields are filled in!")
         return "Unknown", "Unknown", "Login/Create Bot"
     
+    if version == "auto":
+        gr.Warning("Lodestone does currently not support version 1.20.2. Please make sure the server is running a supported version!")
     
     gr.Warning("If its your first time logging in you may need to login using the terminal!")
     
@@ -263,12 +265,13 @@ def get_latest_chats():
 
 
 def build_schematic(files, x, z):
-    if not x or not z or not files:
+    if not files:
         gr.Warning("not all fields are filled in!")
         return
     if 'bot' in globals():
-        bot.goto(x=x, y=0, z=z)
-        time.sleep(2)
+        if not x or not z:
+            bot.goto(x=x, y=0, z=z)
+            time.sleep(2)
         gr.Info(f"Successfully building schematic at {x}, {z}")
         bot.build_schematic(f'{files.name}')
     else:
@@ -280,7 +283,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
     with gr.Tab("Bot Settings"):
         # gr.Markdown(requests.get('https://raw.githubusercontent.com/the-lodestone-project/Lodestone/main/README.md').text)
         # gr.Image("https://github.com/the-lodestone-project/Lodestone/blob/main/assets/logo.png?raw=true", min_width=2000)
-        with gr.Tab("Signle Bot"):
+        with gr.Tab("Single Bot"):
             email = gr.Textbox(placeholder="Notch", label="Username",info="Username to login with")
             auth = gr.Dropdown(["microsoft", "offline"], value="microsoft", label="Authentication Method",info="Authentication method to login with")
             host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
