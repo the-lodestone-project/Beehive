@@ -269,7 +269,7 @@ def build_schematic(files, x, z):
         gr.Warning("not all fields are filled in!")
         return
     if 'bot' in globals():
-        bot.goto(x, z)
+        bot.goto(x, 0 ,z)
         time.sleep(2)
         gr.Info(f"Successfully building schematic at {x}, {z}")
         bot.build_schematic(f'{files.name}')
