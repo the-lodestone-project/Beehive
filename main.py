@@ -270,8 +270,9 @@ def build_schematic(files, x, z):
         return
     if 'bot' in globals():
         if not x or not z:
-            bot.goto(x=x, y=0, z=z)
-            time.sleep(2)
+            if x != 0 or z != 0:
+                bot.goto(x=x, y=0, z=z)
+                time.sleep(2)
         gr.Info(f"Successfully building schematic at {x}, {z}")
         bot.build_schematic(f'{files.name}')
     else:
