@@ -18,7 +18,7 @@ global bot_list
 bot_list = []
 
 global auto_scripts
-auto_scripts = []
+auto_scripts = {}
 
 
 def get_bot_status():
@@ -110,8 +110,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     if auto_scripts:
         for script in auto_scripts:
             if script["event"] == "Start once spawn":
-                texts = [text for text in str(script["script"]).split("\n")]
-                for text in texts:
+                for text in script["script"]:
                     if text != "":
                         bot.chat(text)
                         time.sleep(script["delay"])
@@ -119,8 +118,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
             elif script["event"] == "Start on time (See Advanced Options)":
                 def run_time_script():
                     while True:
-                        texts = [text for text in str(script["script"]).split("\n")]
-                        for text in texts:
+                        for text in script["script"]:
                             if text != "":
                                 bot.chat(text)
                                 time.sleep(script["delay"])
@@ -269,7 +267,7 @@ def build_schematic(files, x, z):
         gr.Warning("not all fields are filled in!")
         return
     if 'bot' in globals():
-        bot.goto(x, 0 ,z)
+        bot.goto(x=x, y=0, z=z)
         time.sleep(2)
         gr.Info(f"Successfully building schematic at {x}, {z}")
         bot.build_schematic(f'{files.name}')
@@ -524,20 +522,21 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 with gr.Column(scale=1, ):
                     with gr.Accordion("Active Scripts", open=True):
                         def get_active_scripts():
-                            string = ""
-                            for script in auto_scripts:
-                                string += f"""### {script['name']}\nCommands:\n"""
-                                scripts = [text for text in str(script["script"]).split("\n")]
-                                for text in scripts:
-                                    if text != "":
-                                        string += f"""* {text}\n"""
-                                string += f"""\n"""
-                                string += f"""Every {script['every']} seconds\n\n"""
-                                string += f"""Delay: {script['delay']} seconds\n\n"""
-                                string += """---\n"""
-                            return string
+                            # string = ""
+                            # for script_name, script_data in auto_scripts.items():
+                            #     string += f"""### {script_data['name']}\nCommands:\n"""
+                            #     scripts = [text for text in str(script_data["script"]).split("\n")]
+                            #     for text in scripts:
+                            #         if text != "":
+                            #             string += f"""* {text}\n"""
+                            #     string += f"""\n"""
+                            #     string += f"""Every {script_data['every']} seconds\n\n"""
+                            #     string += f"""Delay: {script_data['delay']} seconds\n\n"""
+                            #     string += """---\n"""
+                            # return string
+                            return auto_scripts
                         
-                        gr.Markdown(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5)
+                        gr.JSON(value=get_active_scripts, label="Active Scripts (Updated every 5 seconds)", every=5)
             with gr.Accordion("Advanced Script Options", open=False):
                 every_time = gr.Number(value=100, label="Every (seconds)",info="How often to run the script (in seconds)",interactive=True)
                 script_delay = gr.Slider(minimum=1, maximum=50, step=1, label="Delay (seconds)",info="Delay between chat commands (in seconds)",interactive=True)
@@ -557,11 +556,13 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 
             
             def add_script(new_script, every_time, script_name, script_start_on, script_delay):
+                global auto_scripts
                 if not new_script or not every_time or not script_name or not script_start_on:
                     gr.Warning("not all fields are filled in!")
                     return new_script, script_name
                 else:   
-                    auto_scripts.append({"script": new_script, "every": every_time, "name": script_name, "event": script_start_on, "delay": script_delay})
+                    commands = [text for text in str(new_script).split("\n")]
+                    auto_scripts[script_name] = {"script": commands, "every": every_time, "name": script_name, "event": script_start_on, "delay": script_delay}
                     gr.Info(f"Successfully added script {script_name} to the scheduler!")
                     return "", ""
             
