@@ -6,6 +6,7 @@ from lodestone import logger
 from javascript import require
 import requests
 import threading
+import os
 
 global created
 created = False
@@ -110,21 +111,21 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     
     
     if auto_scripts:
-        for script in auto_scripts:
-            if script["event"] == "Start once spawn":
-                for text in script["script"]:
+        for script_name, script_data in auto_scripts.items():
+            if script_data["event"] == "Start once spawn":
+                for text in script_data["script"]:
                     if text != "":
                         bot.chat(text)
-                        time.sleep(script["delay"])
-                gr.Info(f"Successfully ran script {script['name']}")
-            elif script["event"] == "Start on time (See Advanced Options)":
+                        time.sleep(script_data["delay"])
+                gr.Info(f"Successfully ran script {script_name}")
+            elif script_data["event"] == "Start on time (See Advanced Options)":
                 def run_time_script():
                     while True:
-                        for text in script["script"]:
+                        for text in script_data["script"]:
                             if text != "":
                                 bot.chat(text)
-                                time.sleep(script["delay"])
-                        time.sleep(script["every"])
+                                time.sleep(script_data["delay"])
+                        time.sleep(script_data["every"])
                 threading.Thread(target=run_time_script).start()
             else:
                 pass
@@ -436,25 +437,22 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
         msg.submit(respond, inputs=[msg, whisper, whisper_player, prefix, suffix],outputs=[msg])
         
     with gr.Tab("Plugins"):
-        with gr.Accordion("Schematic Builder", open=False):
-            # with gr.Row():
-            #     with gr.Column(scale=1, ):
+        with gr.Tab("Schematic Builder"):
             file_output = gr.File(file_types=[".schematic", ".nbt", ".schem"], label="Schematic File (.schematic .nbt .schem)",file_count="single")
-            with gr.Row():
-                with gr.Column(scale=1, ):
-                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
-                with gr.Column(scale=1, ):
-                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
-            # upload_button = gr.UploadButton("Click to Upload a schematic", file_count="single")
-            # upload_button.upload(upload_file, upload_button, file_output)
+            with gr.Accordion("Advanced Options", open=False):
+                with gr.Row():
+                    with gr.Column(scale=1, ):
+                        x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                    with gr.Column(scale=1, ):
+                        z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
             build = gr.Button("Build schematic", variant='primary')
             build.click(build_schematic, inputs=[file_output, x, z])
             
             
-        with gr.Accordion("Build Cactus Farm", open=False):
+        with gr.Tab("Build Cactus Farm"):
             gr.Markdown("")
             
-        with gr.Accordion("Auto Farm", open=False):
+        with gr.Tab("Auto Farm"):
             with gr.Row():
                 with gr.Column(scale=1, ):
                     crop_type = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Crop Type",info="The Crop type to farm", interactive=True)
@@ -478,7 +476,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 gr.Markdown("Optional Settings")
             start_farm = gr.Button("Start auto Farming", variant='primary')
             
-        with gr.Accordion("Discord Rich Presence", open=False):        
+        with gr.Tab("Discord Rich Presence"):        
             with gr.Row():
                 with gr.Column(scale=1, ):
                     state = gr.Textbox(label="State",info="The state to display")
@@ -643,7 +641,17 @@ password = "lodestone"
 
 try:
     logger.info("Running!\nURL: http://localhost:8000\nUsername: lodestone\nPassword: lodestone\n")
-    ui.queue().launch(inbrowser=True,ssl_verify=False, server_name="0.0.0.0",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
+    SECRET_KEY = os.environ.get('RUN_DOCKER', False)
+
+    if SECRET_KEY:
+        ui.queue().launch(inbrowser=True,ssl_verify=False, server_name="0.0.0.0",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
+    else:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        ui.queue().launch(inbrowser=True,ssl_verify=False, server_name=f"{ip}",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
 except OSError:
     raise OSError(f"Port 8000 is already in use!")
     
