@@ -4,9 +4,11 @@ from lodestone import plugins
 import time
 from lodestone import logger
 from javascript import require
-import requests
 import threading
 import os
+import math
+import random
+import requests
 
 global created
 created = False
@@ -14,7 +16,8 @@ global chat_history
 chat_history = []
 global plugin_list
 plugin_list = []
-
+global anti_afk_task_bool
+anti_afk_task_bool = True
 global bot_list
 bot_list = []
 
@@ -22,20 +25,61 @@ global auto_scripts
 auto_scripts = {}
 
 
+
 def get_bot_status():
     if 'bot' in globals():
         return "Stop Bot"
     else:
-        return "Start/Stop Bot"
-
-def change_tab():
-    return gr.Tabs.update(selected=1)
+        return "Create Bot"
 
 
 
+def anti_afk_loop():
+    global anti_afk_task_bool
+    while anti_afk_task_bool:
+        try:
+            yaw = 2 * random.random() * math.pi - (0.5 * math.pi)
+            pitch = random.random() * math.pi - (0.5 * math.pi)
+            bot.bot.look(yaw, pitch, False)
+            time.sleep(3)
+            bot.set_control_state('jump', True)
+            if bot.entity.isInWater:
+                bot.set_control_state('jump', False)
+            time.sleep(3)
+            bot.set_control_state('jump', False)
+            time.sleep(2)
+            arm = 'right' if random.random() < 0.5 else 'left'
+            bot.bot.swingArm({'hand':arm})
+        except:
+            break
+
+def is_open(ip,port):
+    if "localhost" in ip:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(10)
+        try:
+            s.connect((ip, int(port)))
+            s.shutdown(2)
+            s.settimeout(None)
+            return True, 0
+        except:
+            return False, 0
+    else:
+        status = requests.get(f"https://api.mcstatus.io/v2/status/java/{ip}:{port}").json()
+        if status["srv_record"]['port'] != port:
+            port = status["srv_record"]['port']
+            gr.Warning(f"Server port is {port} not {port}!")
+            return True, port
+        else:
+            return False, 0
 
 
-def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks):
+def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks, anti_afk):
+    
+    email = email.replace(" ", "")
+    host = host.replace(" ", "")
+    host = host.replace(",", ".")
+    
     try:
         if 'bot' in globals():
             def stop_bot():
@@ -48,13 +92,22 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
                     print(e)
                     pass
             stop_bot()
-            return "Already logged in!", "Already logged in!", "Login/Create Bot"
+            return "Already logged in!", "Already logged in!", "Create Bot"
     except Exception as e:
         print(e)
         pass
     if not host or not email or not version:
         gr.Warning("not all fields are filled in!")
-        return "Unknown", "Unknown", "Login/Create Bot"
+        return "Unknown", "Unknown", "Create Bot"
+    
+    check, check_port = is_open(host, port)
+    
+    if not check_port == 0:
+        port = check_port
+    
+    if check == False:
+        gr.Warning("Server is offline!")
+        return "Unknown", "Unknown", "Create Bot"
     
     if version == "auto":
         gr.Warning("Lodestone does currently not support version 1.20.2. Please make sure the server is running a supported version!")
@@ -126,9 +179,16 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
                                 bot.chat(text)
                                 time.sleep(script_data["delay"])
                         time.sleep(script_data["every"])
-                threading.Thread(target=run_time_script).start()
+                threading.Thread(target=run_time_script, daemon=True).start()
             else:
                 pass
+    
+    
+    if anti_afk == True:
+        global anti_afk_task
+        anti_afk_task = threading.Thread(target=anti_afk_loop)
+        anti_afk_task.start()
+        gr.Info("Successfully started anti afk! You can disable this on the Movements tab")
     
     
     info =f"""Successfully logged in as {bot.username}"""
@@ -152,13 +212,13 @@ def create_multiple(email, auth, host, port, version, amount):
                     print(e)
                     pass
             stop_bot()
-            return "Already logged in!", "Already logged in!", "Login/Create Bot"
+            return "Already logged in!", "Already logged in!", "Create Bot"
     except Exception as e:
         print(e)
         pass
     if not host or not email or not version:
         gr.Warning("not all fields are filled in!")
-        return "Unknown", "Unknown", "Login/Create Bot"
+        return "Unknown", "Unknown", "Create Bot"
     
     
     for bots in range(0, amount):
@@ -282,49 +342,78 @@ def build_schematic(files, x, z):
 
 
 with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
+    with gr.Tab("Welcome to project Behive!"):
+        gr.Markdown("Project Beehive is an open source Minecraft bot with a goal to provide players access to helpful gameplay features at no cost. Developed with a clean user interface, Project Beehive offers various plugins and options similar to paid alternatives out there. The project is completely free, open source, and welcoming to contributions from the Minecraft community. Check the wiki for information on plugins, setup guides, contributing, and more. We aim to provide Minecraft players with an easy-to-use bot to enhance their gameplay experience without needing to pay.")
+    
+    
+    
     with gr.Tab("Bot Settings"):
         # gr.Markdown(requests.get('https://raw.githubusercontent.com/the-lodestone-project/Lodestone/main/README.md').text)
         # gr.Image("https://github.com/the-lodestone-project/Lodestone/blob/main/assets/logo.png?raw=true", min_width=2000)
         with gr.Tab("Single Bot"):
-            email = gr.Textbox(placeholder="Notch", label="Username",info="Username to login with")
-            auth = gr.Dropdown(["microsoft", "offline"], value="microsoft", label="Authentication Method",info="Authentication method to login with")
-            host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-            port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
-            version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
-            with gr.Accordion("Optional Settings", open=False):
-                enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
-                skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
-                viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
-                plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
-            btn = gr.Button(value=get_bot_status,variant='primary')
-            
-            
-            
-            
-            out_username = gr.Textbox(value="", label="Logged in as")
-            info = gr.Textbox(value="", label="Info")
-            
-            btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
+            with gr.Row():
+                with gr.Column(scale=2, ):
+                    email = gr.Textbox(placeholder="Notch", label="Username",info="Username to login with")
+                    auth = gr.Dropdown(["microsoft", "offline"], value="microsoft", label="Authentication Method",info="Authentication method to login with")
+                    host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
+                    port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
+                    version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
+                    with gr.Accordion("Optional Settings", open=False):
+                        enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
+                        skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
+                        anti_afk = gr.Checkbox(value=True, label="Anti AFK", info="Enable anti afk",interactive=True)
+                        viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
+                        plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+                    btn = gr.Button(value=get_bot_status,variant='primary', every=5)
+                
+                
+                
+                
+                
+                
+                
+                with gr.Column(scale=1, visible=False):
+                    out_username = gr.Textbox(value="", label="Logged in as")
+                    info = gr.Textbox(value="", label="Info")
+                
+                with gr.Column(scale=1, ):
+                    
+                    def get_skin():
+                        if 'bot' in globals():
+                            if bot.local_auth == "offline":
+                                return "https://github.com/the-lodestone-project/Beehive/blob/main/assets/345.png?raw=true"
+                            else:
+                                return f"https://mc-heads.net/player/{bot.bot.username}/345"
+                        else:
+                            return "https://github.com/the-lodestone-project/Beehive/blob/main/assets/345.png?raw=true"
+                    
+                    skin = gr.Image(value=get_skin, label="Skin", every=10, width=500, show_download_button=False)
+                    
+                    
+                
+                btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks, anti_afk], outputs=[out_username, info, btn], show_progress="minimal")
         with gr.Tab("Multiple Bots"):
-            email = gr.Textbox(placeholder="Notch", label="Username Prefix",info="Username prefix. The bot will login with this prefix and a number after it")
-            auth = gr.Dropdown(["offline"], value="offline", label="Authentication Method",info="Authentication method to login with")
-            host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-            port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
-            version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
-            amount = gr.Slider(minimum=1, maximum=50, step=1, label="Amount", info="Amount of bots to create", interactive=True)
-            with gr.Accordion("Optional Settings", open=False):
-                enable_viewer = gr.Checkbox(value=False, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=False)
-                viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0, interactive=False)
-                # plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
-            btn = gr.Button(value=get_bot_status,variant='primary')
-            
-            
-            
-            
-            out_username = gr.Textbox(value="", label="Bot count")
-            info = gr.Textbox(value="", label="Info")
-            
-            btn.click(create_multiple, inputs=[email, auth, host, port, version, amount], outputs=[out_username, info, btn], show_progress="minimal")
+            with gr.Column(scale=1):
+                email = gr.Textbox(placeholder="Notch", label="Username Prefix",info="Username prefix. The bot will login with this prefix and a number after it")
+                auth = gr.Dropdown(["offline"], value="offline", label="Authentication Method",info="Authentication method to login with")
+                host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
+                port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
+                version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
+                amount = gr.Slider(minimum=1, maximum=50, step=1, label="Amount", info="Amount of bots to create", interactive=True)
+                with gr.Accordion("Optional Settings", open=False):
+                    enable_viewer = gr.Checkbox(value=False, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=False)
+                    viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0, interactive=False)
+                    # plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+                btn = gr.Button(value=get_bot_status,variant='primary', every=5)
+                
+                
+                
+                
+                out_username = gr.Textbox(value="", label="Bot count")
+                info = gr.Textbox(value="", label="Info")
+                
+                
+                btn.click(create_multiple, inputs=[email, auth, host, port, version, amount], outputs=[out_username, info, btn], show_progress="minimal")
         
         # with gr.Tab("EasyMC"):
         #     email = gr.Textbox(placeholder="********************", label="Token",info="Token to login with")
@@ -504,6 +593,38 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
             
     
     with gr.Tab("Movements"):
+        with gr.Tab("Anti AFK"):
+            def check_if_anti_afk():
+                if anti_afk_task_bool == True and 'bot' in globals():
+                    return "Stop Anti AFK"
+                else:
+                    return "Start Anti AFK"
+            
+            def start_and_stop_anti_afk():
+                global anti_afk_task_bool
+                if 'bot' in globals():
+                    if anti_afk_task_bool == True:
+                        
+                        anti_afk_task_bool = False
+                        gr.Info("Successfully stopped anti afk!")
+                    else:
+                        global anti_afk_task
+                        anti_afk_task_bool = True
+                        anti_afk_task = threading.Thread(target=anti_afk_loop)
+                        anti_afk_task.start()
+                        gr.Info("Successfully started anti afk!")
+                else:
+                    gr.Warning("You need to login first!")
+            
+            
+            start_anti_afk = gr.Button(value=check_if_anti_afk, every=5, variant='primary')
+            
+            
+            
+            start_anti_afk.click(start_and_stop_anti_afk)
+        
+        
+        
         with gr.Tab("Basic Movements"):
             with gr.Row():
                 with gr.Column(scale=1, ):
@@ -653,5 +774,4 @@ try:
         s.close()
         ui.queue().launch(inbrowser=True,ssl_verify=False, server_name=f"{ip}",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
 except OSError:
-    raise OSError(f"Port 8000 is already in use!")
-    
+    raise OSError(f"Port 8000 is already in use!")                              
