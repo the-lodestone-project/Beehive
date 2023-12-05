@@ -70,6 +70,8 @@ def is_open(ip,port):
             port = status["srv_record"]['port']
             gr.Warning(f"Server port is {port} not {port}!")
             return True, port
+        elif status["srv_record"]['port'] == port:
+            return True, 0
         else:
             return False, 0
 
