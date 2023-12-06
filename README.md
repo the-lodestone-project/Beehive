@@ -78,13 +78,13 @@ If you have Docker installed, you can easily get Project Beehive up and running.
 2. Pull the Docker image from the Docker Hub using the following command:
 
 ```bash
-docker pull thelodestoneproject/beehive:latest
+docker pull ghcr.io/the-lodestone-project/beehive:latest
 ```
 
 After pulling the image, run the Docker container with the following command:
 
 ```bash
-docker run -p 8000:8000 thelodestoneproject/beehive:latest
+docker run -p 8000:8000 ghcr.io/the-lodestone-project/beehive:latest
 ```
 
 This command will start the Project Beehive bot and map it to port 8000 on your local machine.
