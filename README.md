@@ -126,7 +126,7 @@ This command will start the Project Beehive bot and map it to port 8000 on your 
 Open your web browser and navigate to http://localhost:8000 to access the bot.
 Please note that Python and pip must be installed and running on your machine to execute these steps. If you don't have python and pip installed, you can download it from [here](https://www.python.org/downloads/).
 
-## images
+## images:
 
 ![alt text](https://i.imgur.com/RRHOgzp.png)
 
