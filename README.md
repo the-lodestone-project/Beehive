@@ -87,7 +87,7 @@ After pulling the image, run the Docker container with the following command:
 docker run -p 8000:8000 ghcr.io/the-lodestone-project/beehive:latest
 ```
 
-This command will start the Project Beehive bot and map it to port 8000 on your local machine.
+This command will start Project Beehive and map it to port 8000 on your local machine.
 
 Open your web browser and navigate to http://localhost:8000 to access the bot.
 Please note that Docker must be installed and running on your machine to execute these steps. If you don't have Docker installed, you can download it from [here](https://docs.docker.com/get-docker/).
@@ -121,7 +121,7 @@ After cloning the repository and installing all the dependencies, run the python
 python main.py
 ```
 
-This command will start the Project Beehive bot and map it to port 8000 on your local machine.
+This command will start Project Beehive and map it to port 8000 on your local machine.
 
 Open your web browser and navigate to http://localhost:8000 to access the bot.
 Please note that Python and pip must be installed and running on your machine to execute these steps. If you don't have python and pip installed, you can download it from [here](https://www.python.org/downloads/).
