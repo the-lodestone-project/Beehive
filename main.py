@@ -601,11 +601,11 @@ Go to the "Player Info" and "System Resources" tabs to monitor health, food, exp
             plugin_index = requests.get("https://raw.githubusercontent.com/the-lodestone-project/Plugins/main/plugin_index.json").json()
             for plugin_name, plugin_data in plugin_index.items():
                 with gr.Row(variant="panel"):
-                    with gr.Column(scale=4, ):
+                    with gr.Column(scale=4):
                         with gr.Accordion(f"{plugin_name} - {plugin_data['description']} - v{plugin_data['version']}", open=False):
                             with gr.Column(scale=1, ):
                                 plugin_obj = gr.JSON(plugin_data, container=False, show_label=False)
-                    with gr.Column(scale=1, ):
+                    with gr.Column(scale=1):
                         isExist = os.path.exists(f"plugins/{plugin_name}.py")
                         if isExist:
                             gr.Button(f"Installed", interactive=False)
@@ -883,7 +883,7 @@ try:
     SECRET_KEY = os.environ.get('RUN_DOCKER', False)
 
     if SECRET_KEY:
-        ui.queue().launch(inbrowser=True,ssl_verify=False, server_name="0.0.0.0",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
+        ui.queue().launch(ssl_verify=False, server_name="0.0.0.0",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
     else:
         import socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
