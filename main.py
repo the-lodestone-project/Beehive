@@ -3,7 +3,12 @@ import lodestone
 from lodestone import plugins
 import time
 from lodestone import logger
+import glob
+import os
+from importlib import import_module
+import json
 from javascript import require
+import sys
 import threading
 import os
 import math
@@ -74,7 +79,21 @@ def is_open(ip,port):
             return True, 0
         else:
             return False, 0
+global installed_plugins
+installed_plugins = []
+isExist = os.path.exists("plugins")
+if not isExist:
+    os.makedirs("plugins")
 
+isExist = os.path.exists("plugins/__init__.py")
+if not isExist:
+    with open('plugins/__init__.py', 'w') as fp:
+        pass
+
+for plugin in glob.glob("plugins/*.py"):
+    if not "__init__" in plugin:
+        name = plugin.replace(".py", "").replace("plugins/", "")
+        installed_plugins.append(name)
 
 def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks, anti_afk):
     
@@ -117,21 +136,29 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     gr.Warning("If its your first time logging in you may need to login using the terminal!")
     
     global bot
-    plugin_str = ""
-    if plugin:
-        plugin_str += "Plugins: "
-        for new_plugin in plugin:
-            if new_plugin == "Schematic Builder":
-                plugin_str += "Schematic Builder, "
-                plugin_list.append(plugins.schematic)
-            elif new_plugin == "Cactus Farm Builder":
-                plugin_str += "Cactus Farm Builder, "
-                plugin_list.append(plugins.cactus)
-            elif new_plugin == "Discord Rich Presence":
-                plugin_str += "Discord Rich Presence, "
-                plugin_list.append(plugins.discordrp)
-            else:
-                pass
+    plugins = []
+    for plugin_ in plugin:
+            try:
+                plugins.append(import_module("plugins." + plugin_).plugin)
+            except Exception as e:
+                print(e)
+                continue
+    
+    # plugin_str = ""
+    # if plugin:
+    #     plugin_str += "Plugins: "
+    #     for new_plugin in plugin:
+    #         if new_plugin == "Schematic Builder":
+    #             plugin_str += "Schematic Builder, "
+    #             plugin_list.append(plugins.schematic)
+    #         elif new_plugin == "Cactus Farm Builder":
+    #             plugin_str += "Cactus Farm Builder, "
+    #             plugin_list.append(plugins.cactus)
+    #         elif new_plugin == "Discord Rich Presence":
+    #             plugin_str += "Discord Rich Presence, "
+    #             plugin_list.append(plugins.discordrp)
+    #         else:
+    #             pass
     if enable_viewer == False:
         enable_viewer = True
     elif enable_viewer == True:
@@ -148,7 +175,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
         auth=auth,
         ls_disable_viewer=enable_viewer,
         ls_skip_checks=skip_checks,
-        ls_plugin_list=plugin_list
+        ls_plugin_list=plugins
     )
     
     version_check = int(str(bot.bot.version).replace(".",""))
@@ -197,7 +224,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     
     
     bot_list.append({f"{email}": bot})
-    gr.Info(f"Successfully logged in as {bot.username}\n{plugin_str}")
+    gr.Info(f"Successfully logged in as {bot.username}")
     return bot.username, info, "Stop Bot"
 
 
@@ -344,8 +371,88 @@ def build_schematic(files, x, z):
 
 
 with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
-    with gr.Tab("Welcome to project Behive!"):
-        gr.Markdown("Project Beehive is an open source Minecraft bot with a goal to provide players access to helpful gameplay features at no cost. Developed with a clean user interface, Project Beehive offers various plugins and options similar to paid alternatives out there. The project is completely free, open source, and welcoming to contributions from the Minecraft community. Check the wiki for information on plugins, setup guides, contributing, and more. We aim to provide Minecraft players with an easy-to-use bot to enhance their gameplay experience without needing to pay.")
+    with gr.Accordion("How to use", open=False):
+        gr.Markdown("""# How to Use Project Beehive
+
+## Creating Bots
+
+Go to the "Bot Settings" tab.
+
+### Single Bot
+
+1. Enter your desired username, authentication method, server IP, port, and version.
+2. (Optional) Enable viewing, skip checks, anti-AFK, choose plugins, and set viewer port.  
+3. Click the "Create Bot" button.
+
+### Multiple Bots  
+
+1. Enter a username prefix, authentication method, server IP, port, version, and number of bots.
+2. (Optional) Enable viewing and set viewer port.
+3. Click the "Create Bots" button.
+
+## Controlling the Bot
+
+### Chatting 
+
+Go to the "Chat" tab.
+
+1. Type a message in the text box.
+2. (Optional) Enable whispering to choose a player, and add prefixes/suffixes.
+3. Click "Send Message" or press Enter to send the message.
+
+## Using Plugins
+
+Go to the "Plugins" tab.
+
+### Downloading Plugins
+
+1. Go to the Plugin Manager tab.
+2. Find a plugin and click "Download".
+3. Restart the app to load the new plugin.
+
+### Using Schematic Builder 
+
+1. Go to the Schematic Builder tab.  
+2. Upload your .schematic file. 
+3. (Optional) Set coordinates to build at.
+4. Click "Build Schematic".
+
+### Enabling Discord Rich Presence
+
+1. Go to the Discord Rich Presence tab.
+2. Enter a state, details, images, and text.
+3. Click "Update Presence" to set the status.
+
+### Writing Custom Plugins 
+
+1. Go to the Custom Plugins tab.
+2. Enter Python code to execute. 
+3. Click "Run" to run the code on the bot.
+
+Let me know if you need any clarification or have additional questions!
+
+### Moving
+
+Go to the "Movements" tab.
+
+1. Click buttons to make the bot jump, walk in directions, or start/stop anti-AFK.
+
+### Automating
+
+Go to the "Automation" tab.  
+
+1. Enter chat commands into the script text area.
+2. (Optional) Set frequency and delay options.  
+3. Enter a script name.
+4. Choose a start option like on spawn or timed.
+5. Click "Add Script".
+
+## Monitoring  
+
+Go to the "Player Info" and "System Resources" tabs to monitor health, food, experience and more. All data updates automatically.
+""")
+    # with gr.Tab("Welcome to project Behive!"):
+    #     gr.Markdown("Project Beehive is an open source Minecraft bot with a goal to provide players access to helpful gameplay features at no cost. Developed with a clean user interface, Project Beehive offers various plugins and options similar to paid alternatives out there. The project is completely free, open source, and welcoming to contributions from the Minecraft community. Check the wiki for information on plugins, setup guides, contributing, and more. We aim to provide Minecraft players with an easy-to-use bot to enhance their gameplay experience without needing to pay.")
     
     
     
@@ -365,7 +472,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                         skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
                         anti_afk = gr.Checkbox(value=True, label="Anti AFK", info="Enable anti afk",interactive=True)
                         viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
-                        plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+                        plugin = gr.Dropdown(installed_plugins,multiselect=True, label="Plugins",info="Plugins to load on startup")
                     btn = gr.Button(value=get_bot_status,variant='primary', every=5)
                 
                 
@@ -416,55 +523,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 
                 
                 btn.click(create_multiple, inputs=[email, auth, host, port, version, amount], outputs=[out_username, info, btn], show_progress="minimal")
-        
-        # with gr.Tab("EasyMC"):
-        #     email = gr.Textbox(placeholder="********************", label="Token",info="Token to login with")
-        #     host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-        #     port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
-        #     version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
-        #     with gr.Accordion("Optional Settings", open=False):
-        #         enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
-        #         skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
-        #         viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
-        #         plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
-                
-            
-            
-        #     btn = gr.Button(value=get_bot_status,variant='primary')
-            
-            
-            
-            
-        #     out_username = gr.Textbox(value="", label="Logged in as")
-        #     info = gr.Textbox(value="", label="Info")
-            
-        #     btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
-        
-        # with gr.Tab("The Altening"):
-        #     email = gr.Textbox(placeholder="*******@alt.com", label="Token",info="Token to login with")
-        #     host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-        #     port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
-        #     version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
-        #     with gr.Accordion("Optional Settings", open=False):
-        #         enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
-        #         skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
-        #         viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
-        #         plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
-        #     btn = gr.Button(value=get_bot_status,variant='primary')
-            
-            
-            
-            
-        #     out_username = gr.Textbox(value="", label="Logged in as")
-        #     info = gr.Textbox(value="", label="Info")
-            
-        
-        #     btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
-    
-    
-    
-    
-    
     
     with gr.Tab("Chat"):
         chat = gr.Textbox(value=get_latest_chats,every=2,label="Chat History (Updated every 2 seconds)",lines=20, max_lines=20, min_width=100, autoscroll=True, autofocus=False)
@@ -528,71 +586,125 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
         msg.submit(respond, inputs=[msg, whisper, whisper_player, prefix, suffix],outputs=[msg])
         
     with gr.Tab("Plugins"):
-        with gr.Tab("Schematic Builder"):
-            file_output = gr.File(file_types=[".schematic", ".nbt", ".schem"], label="Schematic File (.schematic .nbt .schem)",file_count="single")
-            with gr.Accordion("Advanced Options", open=False):
-                with gr.Row():
-                    with gr.Column(scale=1, ):
-                        x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
-                    with gr.Column(scale=1, ):
-                        z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
-            build = gr.Button("Build schematic", variant='primary')
-            build.click(build_schematic, inputs=[file_output, x, z])
+        with gr.Tab("Plugin Manager"):
             
-            
-        with gr.Tab("Build Cactus Farm"):
-            gr.Markdown("")
-            
-        with gr.Tab("Auto Farm"):
-            with gr.Row():
-                with gr.Column(scale=1, ):
-                    crop_type = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Crop Type",info="The Crop type to farm", interactive=True)
-                with gr.Column(scale=1, ):
-                    seed_name = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Seed Name",info="The Seed name to plant back", interactive=True)
-                with gr.Column(scale=1, ):
-                    harvest_name = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Harvest Name",info="The block name to harvest", interactive=True)
+            def download_plugin(plugin_data):
+                plugin_files = list(plugin_data['files'])
+                for file in plugin_files:
+                    plugin = requests.get(f"https://raw.githubusercontent.com/the-lodestone-project/Plugins/main/plugins/{file}")
+                    with open(f"plugins/{file}", "wb") as f:
+                        f.write(plugin.content)
                 
-            with gr.Row():
-                with gr.Column(scale=1, ):
-                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
-                with gr.Column(scale=1, ):
-                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
-            
-            with gr.Row():
-                with gr.Column(scale=1, ):
-                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
-                with gr.Column(scale=1, ):
-                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
-            with gr.Accordion("Optional Settings", open=False):
-                gr.Markdown("Optional Settings")
-            start_farm = gr.Button("Start auto Farming", variant='primary')
-            
-        with gr.Tab("Discord Rich Presence"):        
-            with gr.Row():
-                with gr.Column(scale=1, ):
-                    state = gr.Textbox(label="State",info="The state to display")
-                with gr.Column(scale=1, ):
-                    details = gr.Textbox(label="Details",info="The details to display")
-                with gr.Column(scale=1, ):
-                    large_image = gr.Textbox(label="Large Image (url)",info="The large image to display")
-                with gr.Column(scale=1, ):
-                    large_text = gr.Textbox(label="Large Text",info="The large text to display")
-                with gr.Column(scale=1, ):
-                    small_image = gr.Textbox(label="Small Image (url)",info="The small image to display")
-                with gr.Column(scale=1, ):
-                    small_text = gr.Textbox(label="Small Text",info="The small text to display")
-            
-            def update_presence_def(state="No state provided", details="No details Provided", large_image=None, large_text=None, small_image=None, small_text=None):
-                print(details)
+                gr.Warning("Please restart to load the plugin! (You can do this by clicking the restart button on the 'Restart & Settings' tab)")
+                return gr.Button("Requires Restart", interactive=False, variant='stop')
+                
+            plugin_index = requests.get("https://raw.githubusercontent.com/the-lodestone-project/Plugins/main/plugin_index.json").json()
+            for plugin_name, plugin_data in plugin_index.items():
+                with gr.Row(variant="panel"):
+                    with gr.Column(scale=4, ):
+                        with gr.Accordion(f"{plugin_name} - {plugin_data['description']} - v{plugin_data['version']}", open=False):
+                            with gr.Column(scale=1, ):
+                                plugin_obj = gr.JSON(plugin_data, container=False, show_label=False)
+                    with gr.Column(scale=1, ):
+                        isExist = os.path.exists(f"plugins/{plugin_name}.py")
+                        if isExist:
+                            gr.Button(f"Installed", interactive=False)
+                        else:
+                            plugin_name = gr.Button(f"Download", variant='primary')
+                            plugin_name.click(download_plugin, inputs=[plugin_obj], outputs=[plugin_name])
+        
+        
+        with gr.Tab("Installed Plugins"):
+            if not installed_plugins == []:
+                if "schematic_builder" in str(installed_plugins):
+                    with gr.Tab("Schematic Builder"):
+                        file_output = gr.File(file_types=[".schematic", ".nbt", ".schem"], label="Schematic File (.schematic .nbt .schem)",file_count="single")
+                        with gr.Accordion("Advanced Options", open=False):
+                            with gr.Row():
+                                with gr.Column(scale=1, ):
+                                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                                with gr.Column(scale=1, ):
+                                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
+                        build = gr.Button("Build schematic", variant='primary')
+                        build.click(build_schematic, inputs=[file_output, x, z])
+                    
+                if "cactus_farm_builder" in str(installed_plugins):
+                    with gr.Tab("Build Cactus Farm"):
+                        gr.Markdown("")
+                
+                if "auto_farmer" in str(installed_plugins):
+                    with gr.Tab("Auto Farm"):
+                        with gr.Row():
+                            with gr.Column(scale=1, ):
+                                crop_type = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Crop Type",info="The Crop type to farm", interactive=True)
+                            with gr.Column(scale=1, ):
+                                seed_name = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Seed Name",info="The Seed name to plant back", interactive=True)
+                            with gr.Column(scale=1, ):
+                                harvest_name = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Harvest Name",info="The block name to harvest", interactive=True)
+                            
+                        with gr.Row():
+                            with gr.Column(scale=1, ):
+                                x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                            with gr.Column(scale=1, ):
+                                z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
+                        
+                        with gr.Row():
+                            with gr.Column(scale=1, ):
+                                x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                            with gr.Column(scale=1, ):
+                                z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
+                        with gr.Accordion("Optional Settings", open=False):
+                            gr.Markdown("Optional Settings")
+                        start_farm = gr.Button("Start auto Farming", variant='primary')
+                    
+                    
+                if "discordrp" in str(installed_plugins):
+                    with gr.Tab("Discord Rich Presence"):        
+                        with gr.Row():
+                            with gr.Column(scale=1, ):
+                                state = gr.Textbox(label="State",info="The state to display")
+                            with gr.Column(scale=1, ):
+                                details = gr.Textbox(label="Details",info="The details to display")
+                            with gr.Column(scale=1, ):
+                                large_image = gr.Textbox(label="Large Image (url)",info="The large image to display")
+                            with gr.Column(scale=1, ):
+                                large_text = gr.Textbox(label="Large Text",info="The large text to display")
+                            with gr.Column(scale=1, ):
+                                small_image = gr.Textbox(label="Small Image (url)",info="The small image to display")
+                            with gr.Column(scale=1, ):
+                                small_text = gr.Textbox(label="Small Text",info="The small text to display")
+                        
+                        def update_presence_def(state="No state provided", details="No details Provided", large_image=None, large_text=None, small_image=None, small_text=None):
+                            print(details)
+                            if 'bot' in globals():
+                                bot.discordrp(state=state, details=details, start=time.time())
+                                gr.Info("Successfully updated presence!")
+                            else:
+                                pass
+                        
+                        update_presence = gr.Button("Update Presence", variant='primary')
+                        update_presence.click(update_presence_def, inputs=[state, details, large_image, large_text, small_image, small_text])
+            else:
+                gr.Textbox(value="No plugins installed!\nIf you have installed plugins please restart.", show_label=False, interactive=False)
+        with gr.Tab("Custom Plugins"):
+            command = gr.Textbox(placeholder="bot.run_custom_command()", label="Custom Plugins",info="Run your own custom plugins")
+            run = gr.Button("Run", variant='primary')
+            def run_custom_plugin(command):
                 if 'bot' in globals():
-                    bot.discordrp(state=state, details=details, start=time.time())
-                    gr.Info("Successfully updated presence!")
+                    if command != "":
+                        try:
+                            exec(command)
+                            gr.Info(f"Successfully ran command {command}")
+                            return command
+                        except:
+                            gr.Warning("Invalid command!")
+                            return command
+                    return command
                 else:
-                    pass
-            
-            update_presence = gr.Button("Update Presence", variant='primary')
-            update_presence.click(update_presence_def, inputs=[state, details, large_image, large_text, small_image, small_text])
-            
+                    gr.Warning("You need to login first!")
+                    return command
+                
+            run.click(run_custom_plugin, inputs=[command], outputs=[command])
     
     with gr.Tab("Movements"):
         with gr.Tab("Anti AFK"):
@@ -740,26 +852,30 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 experience = gr.Textbox(value=cpu, label=f"CPU usage (%)", every=5)
             with gr.Column(scale=1):
                 difficulty = gr.Textbox(value=platform.system, label=f"System Type")
-        # refresh_button.click(get_player_info, outputs=[health, food, experience])
     
-# import os
-# from dotenv import load_dotenv
-# import socket
-# import requests
-# s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# s.connect(("8.8.8.8", 80))
-# host = s.getsockname()[0]
-# s.close()
+    with gr.Tab("Restart & Settings"):
+        restart = gr.Button("Restart", variant='stop')
+        def restart_program():
+            gr.Info("Restarting... (please refresh the page after 15 seconds)")
+            time.sleep(3)
+            """Restarts the current program, with file objects and descriptors
+            cleanup
+            """
+
+            try:
+                p = psutil.Process(os.getpid())
+                for handler in p.open_files() + p.connections():
+                    os.close(handler.fd)
+            except Exception as e:
+                print(e)
+
+            python = sys.executable
+            os.execl(python, python, *sys.argv)
+        restart.click(restart_program)
     
-# load_dotenv()
 
 username = "lodestone"
 password = "lodestone"
-
-# if not os.path.isfile("/favicon.ico"):
-#     img_data = requests.get("https://github.com/the-lodestone-project/Lodestone/raw/main/assets/favicon.png").content
-#     with open('/favicon.png', 'wb') as handler:
-#         handler.write(img_data)
 
 
 try:
@@ -774,6 +890,6 @@ try:
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
-        ui.queue().launch(inbrowser=True,ssl_verify=False, server_name=f"{ip}",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
+        ui.queue().launch(ssl_verify=False, server_name=f"{ip}",server_port=8000, show_api=False, auth=(f'{username}', f'{password}'), share=False, quiet=True, auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
 except OSError:
     raise OSError(f"Port 8000 is already in use!")                              
