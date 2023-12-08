@@ -70,15 +70,20 @@ def is_open(ip,port):
         except:
             return False, 0
     else:
-        status = requests.get(f"https://api.mcstatus.io/v2/status/java/{ip}:{port}").json()
-        if status["srv_record"]['port'] != port:
-            port = status["srv_record"]['port']
-            gr.Warning(f"Server port is {port} not {port}!")
-            return True, port
-        elif status["srv_record"]['port'] == port:
+        try:
+            status = requests.get(f"https://api.mcstatus.io/v2/status/java/{ip}:{port}").json()
+            if status["srv_record"]['port'] != port:
+                port = status["srv_record"]['port']
+                gr.Warning(f"Server port is {port} not {port}!")
+                return True, port
+            elif status["srv_record"]['port'] == port:
+                return True, 0
+            else:
+                return False, 0
+        except:
             return True, 0
-        else:
-            return False, 0
+        
+        
 global installed_plugins
 installed_plugins = []
 isExist = os.path.exists("plugins")
@@ -370,7 +375,7 @@ def build_schematic(files, x, z):
         
 
 
-with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
+with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project", css=".output_image { display: block; margin: auto; }") as ui:
     with gr.Accordion("How to use", open=False):
         gr.Markdown("""# How to Use Project Beehive
 
@@ -496,7 +501,7 @@ Go to the "Player Info" and "System Resources" tabs to monitor health, food, exp
                         else:
                             return "https://github.com/the-lodestone-project/Beehive/blob/main/assets/345.png?raw=true"
                     
-                    skin = gr.Image(value=get_skin, label="Skin", every=10, width=500, show_download_button=False)
+                    skin = gr.Image(value=get_skin, label="Skin", every=10, width=500, show_download_button=False, elem_id="output_image")
                     
                     
                 
@@ -612,6 +617,15 @@ Go to the "Player Info" and "System Resources" tabs to monitor health, food, exp
                         else:
                             plugin_name = gr.Button(f"Download", variant='primary')
                             plugin_name.click(download_plugin, inputs=[plugin_obj], outputs=[plugin_name])
+            
+            delete_plugins_button = gr.Button("Remove All Plugins", variant='stop')
+            def delete_plugins_function():
+                for plugin in glob.glob("plugins/*.py"):
+                    if not "__init__" in plugin:
+                        os.remove(plugin)
+                gr.Info("Successfully removed all plugins!")
+                gr.Warning("Please restart to clean the plugin cache! (You can do this by clicking the restart button on the 'Restart & Settings' tab)")
+            delete_plugins_button.click(delete_plugins_function)
         
         
         with gr.Tab("Installed Plugins"):
